@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">IRCamera</string>
+    <string name="hardware">MLX90640</string>
+    <string name="start">start</string>
+    <string name="stop">stop</string>
+    <string name="capture">capture</string>
+</resources>
