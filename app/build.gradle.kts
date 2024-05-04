@@ -18,7 +18,7 @@ android {
             cmake {
                 arguments += "-DANDROID_ARM_NEON=TRUE, DANDROID_STL=c++shared"
                 cppFlags += ""
-                //abiFilters 'arm64-v8a'
+                abiFilters += "arm64-v8a"
             }
         }
     }

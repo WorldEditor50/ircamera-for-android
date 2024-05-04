@@ -63,8 +63,13 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private static final int PERMISSION_FOR_WRITE_STORAGE = 2;
-    private static final int PERMISSION_FOR_READ_STORAGE = 3;
+    private static final int PERMISSION_REQUEST_CODE = 1;
+    private static final String[] PERMISSIONS_REQUIRED = {
+            Manifest.permission.INTERNET,
+            Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+    };
     UsbReceiver receiver;
     Button startBtn;
     Button stopBtn;
@@ -92,13 +97,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         IntentFilter intentFilter = getIntentFilter();
         receiver = new UsbReceiver();
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter);
-        /* permission */
-        if (isSupportUsbHost()) {
-            Toast.makeText(this, "unsupport usb host", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "support usb host", Toast.LENGTH_SHORT).show();
-        }
-        requestUsbPermission();
 
         IRCamera.getInstance().registerActivity(this);
         int width = 640;
@@ -127,7 +125,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intentFilter.addAction(IRCamera.ACTION_TEST);
         return intentFilter;
     }
-
+    @Override
+    protected void onStart() {
+        super.onStart();
+        requestPermissions();
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -204,35 +210,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return this.getPackageManager().hasSystemFeature(
                 "android.hardware.usb.host");
     }
-
-    private void requestUsbPermission() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    PERMISSION_FOR_WRITE_STORAGE);
-        }
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    PERMISSION_FOR_READ_STORAGE);
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-         if (requestCode == PERMISSION_FOR_WRITE_STORAGE) {
+        if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "grant write storage permission successfully.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "grant permission successfully.", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "failed to grant write storage permission.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "failed to grant permissions", Toast.LENGTH_SHORT).show();
             }
-        } else if (requestCode == PERMISSION_FOR_READ_STORAGE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "grant read storage permission successfully.", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "failed to read storage permission.", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private boolean checkPermissions() {
+        for (String permission : PERMISSIONS_REQUIRED) {
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                return false;
             }
+        }
+        return true;
+    }
+    private void requestPermissions() {
+        if (!checkPermissions()) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS_REQUIRED, PERMISSION_REQUEST_CODE);
         }
     }
 

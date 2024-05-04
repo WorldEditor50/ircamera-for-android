@@ -75,9 +75,9 @@ public class IRView extends SurfaceView implements SurfaceHolder.Callback, Runna
                         canvas.drawBitmap(bitmap, 0, 0, null);
                     }
                 } catch (Exception e) {
-                        e.printStackTrace();
+                    e.printStackTrace();
                 } finally {
-                        surfaceHolder.unlockCanvasAndPost(canvas);
+                    surfaceHolder.unlockCanvasAndPost(canvas);
                 }
             }
         }

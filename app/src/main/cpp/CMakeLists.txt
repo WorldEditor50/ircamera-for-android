@@ -38,22 +38,17 @@ project("ircamera")
 #link_directories(${LIBCXX_PATH}/libs/${CMAKE_ANDROID_ARCH_ABI}
 #        ${LIBCXXABI_PATH}/libs/${CMAKE_ANDROID_ARCH_ABI})
 set(SRC_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+set(LIBRARIES_INCLUDE_PATH ${SRC_PATH}/3rdParty)
+set(LIBRARIES_PATH ${SRC_PATH}/../jniLibs)
 file(GLOB SRC_FILES
         ${SRC_PATH}/*.h
         ${SRC_PATH}/*.hpp
         ${SRC_PATH}/*.cpp)
 # opencv
-set(OpenCV_DIR ${SRC_PATH})
-set(OpenCV_Libs ${SRC_PATH}/../jniLibs)
-include_directories(${OpenCV_DIR})
-
+include_directories(${LIBRARIES_INCLUDE_PATH}/opencv48)
 add_library(opencv_java4 SHARED IMPORTED)
 set_target_properties(opencv_java4 PROPERTIES IMPORTED_LOCATION
-    ${OpenCV_Libs}/${CMAKE_ANDROID_ARCH_ABI}/libopencv_java4.so)
-
-add_library(c++_shared SHARED IMPORTED)
-set_target_properties(c++_shared PROPERTIES IMPORTED_LOCATION
-        ${OpenCV_Libs}/${CMAKE_ANDROID_ARCH_ABI}/libc++_shared.so)
+        ${LIBRARIES_PATH}/${CMAKE_ANDROID_ARCH_ABI}/libopencv_java4.so)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
     # List C/C++ source files with relative paths to this CMakeLists.txt.
